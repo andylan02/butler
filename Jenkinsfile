@@ -14,7 +14,7 @@ pipeline {
                 }
      
             steps {
-                sh 'echo "Hello, BRANCH_NAME: env.BRANCH_NAME, ${PERSON}, nice to meet you on ${UBUNTU}"'
+                sh 'echo "Hello, BRANCH_NAME: $env.BRANCH_NAME,$BRANCH_NAME, ${PERSON}, nice to meet you on ${UBUNTU}"'
                 sh 'chmod +x app.sh'
                 sh label: '', script: './app.sh'
             }
