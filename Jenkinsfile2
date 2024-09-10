@@ -1,0 +1,87 @@
+//分支代码对应
+def ChoiseEnv() {
+    return [
+        [$class: 'WHideParameterDefinition', name: 'COMMID', defaultValue: '666',description:'提交ID']
+    ]
+}
+
+properties([
+    parameters(ChoiseEnv())
+])
+
+pipeline {
+    agent any
+    environment {
+        // 服务名称
+        SERVICE_NAME="${JOB_BASE_NAME}"
+        MODE="DEPLOY"
+        REASON="无"
+        REMOTE_HOST="占位"
+        _VERSION="测试验证"
+        ROBOT_KEY="6a781aaf-0cda-41ab-9bd2-ed81ee7fc7"
+    }
+    parameters {
+        string(name: 'BRANCH', defaultValue: 'master', description: '请输入将要构建的代码分支')
+    }
+    options {
+        timestamps() // 输出构建日志打印时间信息
+        timeout(time: 10, unit: 'MINUTES') // 设置构建超时时间
+        buildDiscarder(logRotator(numToKeepStr: '15')) // 设置历史构建保留次数
+        gitLabConnection('yongqiangithub') // 操作gitlab的token
+    }
+    triggers{
+        gitlab(triggerOnPush: false,triggerOnMergeRequest: true,branchFilterType: 'All',secretToken: "${env.GIT_TOKEN}") // 预留Gitlab提交自动构建
+    }
+    stages {
+        stage('拉取代码') {
+            steps {
+                script {
+                    try {
+                        // 定义全局变量
+                        env.COMMIT_ID   = sh(script: 'git log --pretty=format:%h',  returnStdout: true).trim() // 提交ID
+                        env.COMMIT_USER = sh(script: 'git log --pretty=format:%an', returnStdout: true).trim() // 提交者
+                        env.COMMIT_TIME = sh(script: 'git log --pretty=format:%ai', returnStdout: true).trim() // 提交时间
+                        env.COMMIT_INFO = sh(script: 'git log --pretty=format:%s',  returnStdout: true).trim() // 提交信息
+                    }catch(exc) {
+                        env.REASON = "拉取代码出错"
+                        throw(exc)
+                    }
+                }
+            }
+        }
+
+        stage('检测项目') {
+            steps {
+                script {
+                    try {
+                        sh '''
+                            cat README.md
+                            echo ${COMMID}
+                        '''
+                        sh "printenv"
+                    }catch(exc) {
+                        env.REASON = "检测项目出错"
+                        throw(exc)
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script{
+                wrap([$class: 'BuildUser']){
+                    buildName "#${BUILD_ID}-${BRANCH}-${BUILD_USER}" // 更改构建名称
+                    currentBuild.description = "提交者: ${COMMIT_USER}" // 添加说明信息
+                    currentBuild.description += "\n构建主机: ${REMOTE_HOST}" // 添加说明信息
+                    currentBuild.description += "\n提交ID: ${COMMIT_ID}" // 添加说明信息
+                    currentBuild.description += "\n提交时间: ${COMMIT_TIME}" // 添加说明信息
+                    currentBuild.description += "\n提交内容: ${COMMIT_INFO}" // 添加说明信息
+                }
+                sh "printenv"
+            }
+            cleanWs()
+        }
+    }
+}
