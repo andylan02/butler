@@ -14,7 +14,8 @@ pipeline {
                 }
      
             steps {
-                sh 'echo "Hello, BRANCH_NAME:${env.WORKSPACE},  %BRANCH_NAME%,%BUILD_ID%, %BUILD_NUMBER%, ${PERSON}, nice to meet you on ${UBUNTU}"'
+                 echo "Running ${env.BUILD_ID} ， ${env.BRANCH_NAME}on ${env.JENKINS_URL}"
+                sh 'echo "Hello ${PERSON}, nice to meet you on ${UBUNTU}"'
                 sh 'chmod +x app.sh'
                 sh label: '', script: './app.sh'
             }
