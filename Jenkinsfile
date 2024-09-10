@@ -14,7 +14,10 @@ pipeline {
                 }
      
             steps {
-                 echo "Running ${env.BUILD_ID} ， ${env.BRANCH_NAME}on ${env.JENKINS_URL}"
+                echo "Running BUILD_ID：${env.BUILD_ID}，BRANCH_NAME：${env.BRANCH_NAME} on ${env.JENKINS_URL}"
+                echo "Running BUILD_NUMBER：${env.BUILD_NUMBER}，BUILD_TAG：${env.BUILD_TAG} on ${env.JENKINS_URL}"
+                echo "Running EXECUTOR_NUMBER：${env.EXECUTOR_NUMBER}，JOB_NAME：${env.JOB_NAME} on ${env.JENKINS_URL}"
+                echo "Running NODE_NAME：${env.NODE_NAME}，WORKSPACE：${env.WORKSPACE} on ${env.JENKINS_URL}"
                 sh 'echo "Hello ${PERSON}, nice to meet you on ${UBUNTU}"'
                 sh 'chmod +x app.sh'
                 sh label: '', script: './app.sh'
