@@ -26,8 +26,7 @@ pipeline {
     options {
         timestamps() // 输出构建日志打印时间信息
         timeout(time: 10, unit: 'MINUTES') // 设置构建超时时间
-        buildDiscarder(logRotator(numToKeepStr: '15')) // 设置历史构建保留次数
-        gitLabConnection('yongqiangithub') // 操作gitlab的token
+        buildDiscarder(logRotator(numToKeepStr: '15')) // 设置历史构建保留次数        
     }
     triggers{
         gitlab(triggerOnPush: false,triggerOnMergeRequest: true,branchFilterType: 'All',secretToken: "${env.GIT_TOKEN}") // 预留Gitlab提交自动构建
