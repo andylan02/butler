@@ -2,8 +2,16 @@ pipeline {
     agent any
     parameters {
         choice(name: 'UBUNTU', choices: ['18.10', '19.04'], description: 'Chose Ubuntu Release')
+        string(name: 'STATEMENT', defaultValue: 'hello; ls /', description: 'What should I say?')
                }
     stages {
+        stage('Example') {
+              steps {
+                /* CORRECT */
+                sh('echo ${STATEMENT}')
+              }
+            }
+        
         stage('build') {
             input {
                     message "proceed?"
@@ -12,6 +20,7 @@ pipeline {
                         string(name: 'PERSON', defaultValue: 'Eric', description: 'name')
                     }
                 }
+             
      
             steps {
                 echo "Running BUILD_ID：${env.BUILD_ID}，BRANCH_NAME：${env.BRANCH_NAME} on ${env.JENKINS_URL}"
