@@ -21,12 +21,12 @@ pipeline {
         ROBOT_KEY="6a781aaf-0cda-41ab-9bd2-ed81ee7fc7"
     }
     parameters {
-        string(name: 'BRANCH', defaultValue: 'master', description: '请输入将要构建的代码分支')
+        string(name: 'BRANCH', defaultValue: 'Hide', description: '请输入将要构建的代码分支')
     }
     options {
         timestamps() // 输出构建日志打印时间信息
         timeout(time: 10, unit: 'MINUTES') // 设置构建超时时间
-        buildDiscarder(logRotator(numToKeepStr: '15')) // 设置历史构建保留次数        
+        buildDiscarder(logRotator(numToKeepStr: '15')) // 设置历史构建保留次数
     }
 
     stages {
